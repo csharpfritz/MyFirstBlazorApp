@@ -29,10 +29,12 @@ jobs:
       run: dotnet restore
       
     - name: Build
-      run: dotnet build --no-restore --configuration Release
+      run: |
+        dotnet build --no-restore --configuration Release
+        dotnet build Test/Test.csproj --no-restore --configuration Release
       
     - name: Test
-      run: dotnet test --no-build --verbosity normal --configuration Release --logger "trx;LogFileName=test-results.trx" --results-directory ./TestResults --collect:"XPlat Code Coverage"
+      run: dotnet test Test/Test.csproj --no-build --verbosity normal --configuration Release --logger "trx;LogFileName=test-results.trx" --results-directory ./TestResults --collect:"XPlat Code Coverage"
       
     - name: List test results (debug)
       if: always()

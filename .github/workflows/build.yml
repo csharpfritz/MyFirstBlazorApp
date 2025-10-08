@@ -32,14 +32,22 @@ jobs:
       run: dotnet build --no-restore --configuration Release
       
     - name: Test
-      run: dotnet test --no-build --verbosity normal --configuration Release --logger "trx;LogFileName=test-results.trx" --collect:"XPlat Code Coverage"
+      run: dotnet test --no-build --verbosity normal --configuration Release --logger "trx;LogFileName=test-results.trx" --results-directory ./TestResults --collect:"XPlat Code Coverage"
+      
+    - name: List test results (debug)
+      if: always()
+      run: |
+        echo "Contents of TestResults directory:"
+        ls -la TestResults/ || echo "TestResults directory not found"
+        echo "Looking for TRX files:"
+        find . -name "*.trx" -type f || echo "No TRX files found"
       
     - name: Publish Test Results
       uses: dorny/test-reporter@v1
       if: always()
       with:
         name: .NET Test Results
-        path: '**/*.trx'
+        path: 'TestResults/*.trx'
         reporter: dotnet-trx
         
     - name: Upload Test Results
@@ -48,6 +56,6 @@ jobs:
       with:
         name: test-results
         path: |
-          **/*.trx
-          **/TestResults/**
+          TestResults/*.trx
+          TestResults/**/*
         retention-days: 7
